@@ -1,4 +1,5 @@
 import { DURATIONS, formatTime, nextMode, progressFor } from './timer-core.js';
+import { supportedLanguages, translate } from './i18n.js';
 
 const quotes = [
   ['The secret of getting ahead is getting started.', 'Mark Twain'],
@@ -10,7 +11,7 @@ const quotes = [
 
 const state = {
   mode: 'focus', remaining: DURATIONS.focus, running: false, endAt: null,
-  focusCompleted: 0, interruptions: 0, locked: false, quoteIndex: 0
+  focusCompleted: 0, interruptions: 0, locked: false, quoteIndex: 0, language: 'en'
 };
 
 let tickId;
@@ -20,8 +21,9 @@ const elements = {
   ring: $('#progress-ring'), count: $('#count'), quote: $('#quote'), author: $('#author'),
   notice: $('#notice'), lock: $('#lock'), returnDialog: $('#return-dialog'),
   returnCopy: $('#return-copy'), returnBtn: $('#return-btn'), visibility: $('#visibility-status'),
-  chips: [...document.querySelectorAll('.mode-chip')]
+  chips: [...document.querySelectorAll('.mode-chip')], languages: [...document.querySelectorAll('[data-language]')]
 };
+const t = (key) => translate(state.language, key);
 
 function persist() {
   localStorage.setItem('pomodoro-focus-state', JSON.stringify({ ...state, running: false, endAt: null }));
@@ -30,12 +32,20 @@ function persist() {
 function restore() {
   try {
     const saved = JSON.parse(localStorage.getItem('pomodoro-focus-state'));
-    if (saved && DURATIONS[saved.mode]) Object.assign(state, saved, { running: false, endAt: null });
+    if (saved && DURATIONS[saved.mode]) Object.assign(state, saved, { running: false, endAt: null, language: supportedLanguages.includes(saved.language) ? saved.language : 'en' });
   } catch { /* Start fresh when storage is malformed. */ }
 }
 
-function copyFor(mode) {
-  return mode === 'focus' ? 'Focus' : mode === 'short' ? 'Short break' : 'Long break';
+function copyFor(mode) { return t(mode); }
+
+function applyLanguage() {
+  document.documentElement.lang = state.language;
+  $('#brand-text').textContent = t('brand'); $('#eyebrow').textContent = t('eyebrow');
+  $('#hero-title').innerHTML = t('title'); $('#intro').textContent = t('intro');
+  $('#reset').textContent = t('reset'); $('#skip').textContent = t('skip');
+  $('#return-eyebrow').textContent = t('backEyebrow'); $('#return-title').textContent = t('backTitle'); $('#return-btn').textContent = t('back');
+  elements.chips.forEach((chip) => chip.querySelector('span').textContent = copyFor(chip.dataset.mode));
+  elements.languages.forEach((button) => button.classList.toggle('active', button.dataset.language === state.language));
 }
 
 function render() {
@@ -45,10 +55,10 @@ function render() {
   elements.time.textContent = formatTime(state.remaining);
   document.title = `${formatTime(state.remaining)} · Pomodoro Focus`;
   elements.ring.style.setProperty('--progress', progress);
-  elements.start.textContent = state.running ? 'Pause' : 'Start focus';
-  elements.count.textContent = `${state.focusCompleted} ${state.focusCompleted === 1 ? 'session' : 'sessions'} today`;
-  elements.lock.classList.toggle('active', state.running && state.mode === 'focus');
-  elements.visibility.textContent = state.running ? 'Focus protection is on' : 'Ready when you are';
+  elements.start.textContent = state.running ? t('pause') : t('start');
+  elements.count.textContent = `${state.focusCompleted} ${state.focusCompleted === 1 ? t('session') : t('sessions')}`;
+  elements.lock.textContent = t('lock'); elements.lock.classList.toggle('active', state.running && state.mode === 'focus');
+  elements.visibility.textContent = state.running ? t('protected') : t('ready');
   elements.chips.forEach((chip) => chip.classList.toggle('selected', chip.dataset.mode === state.mode));
 }
 
@@ -75,7 +85,7 @@ function finishPhase() {
   state.remaining = DURATIONS[state.mode];
   state.quoteIndex += 1;
   setQuote(); render(); persist();
-  showNotice(completedMode === 'focus' ? `Beautiful work. Time for a ${copyFor(state.mode).toLowerCase()}.` : 'Break complete. Return to one clear thing.');
+  showNotice(completedMode === 'focus' ? t('complete').replace('{mode}', copyFor(state.mode).toLowerCase()) : t('breakComplete'));
   if ('Notification' in window && Notification.permission === 'granted') new Notification('Pomodoro Focus', { body: 'Your timer is complete.' });
 }
 
@@ -101,7 +111,7 @@ function start() {
 }
 
 function chooseMode(mode) {
-  if (state.running) { showNotice('Finish or pause this session before changing modes.'); return; }
+  if (state.running) { showNotice(t('change')); return; }
   state.mode = mode; state.remaining = DURATIONS[mode]; render(); persist();
 }
 
@@ -109,7 +119,7 @@ function interrupt() {
   if (!state.running || state.mode !== 'focus' || state.locked) return;
   state.running = false; state.endAt = null; state.locked = true; state.interruptions += 1;
   stopClock(); render(); persist();
-  elements.returnCopy.textContent = `Focus was interrupted. Take one breath, name the next smallest step, then return to your work.`;
+  elements.returnCopy.textContent = t('interrupted');
   elements.returnDialog.showModal();
 }
 
@@ -117,11 +127,12 @@ elements.start.addEventListener('click', start);
 elements.reset.addEventListener('click', () => { stopClock(); state.running = false; state.endAt = null; state.remaining = DURATIONS[state.mode]; render(); persist(); });
 elements.skip.addEventListener('click', finishPhase);
 elements.chips.forEach((chip) => chip.addEventListener('click', () => chooseMode(chip.dataset.mode)));
-elements.returnBtn.addEventListener('click', () => { state.locked = false; elements.returnDialog.close(); render(); persist(); showNotice('Welcome back. Begin with the next small action.'); });
+elements.returnBtn.addEventListener('click', () => { state.locked = false; elements.returnDialog.close(); render(); persist(); showNotice(t('welcome')); });
+elements.languages.forEach((button) => button.addEventListener('click', () => { state.language = button.dataset.language; applyLanguage(); render(); persist(); }));
 document.addEventListener('visibilitychange', () => { if (document.hidden) interrupt(); });
 window.addEventListener('blur', () => window.setTimeout(() => { if (!document.hasFocus()) interrupt(); }, 100));
 
-restore(); setQuote(); render();
+restore(); applyLanguage(); setQuote(); render();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));

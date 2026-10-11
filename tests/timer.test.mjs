@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { formatTime, nextMode, progressFor } from '../dist/timer-core.js';
+import { supportedLanguages, translate } from '../dist/i18n.js';
 
 test('formats countdown time', () => {
   assert.equal(formatTime(1500), '25:00');
@@ -38,4 +39,9 @@ test('declares a restrictive content policy and local server security headers', 
   for (const header of ['X-Content-Type-Options', 'Permissions-Policy', 'X-Frame-Options', 'Referrer-Policy']) {
     assert.match(server, new RegExp(header));
   }
+});
+
+test('provides English, Traditional Chinese, and Japanese interface text', () => {
+  assert.deepEqual(supportedLanguages, ['en', 'zh-TW', 'ja']);
+  for (const language of supportedLanguages) assert.ok(translate(language, 'start').length > 0);
 });

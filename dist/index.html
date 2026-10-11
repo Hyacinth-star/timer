@@ -17,14 +17,15 @@
   <body>
     <main class="app-shell">
       <header>
-        <a class="brand" href="#top" aria-label="Pomodoro Focus home"><span class="brand-dot"></span>pomodoro</a>
+        <a class="brand" href="#top" aria-label="Pomodoro Focus home"><span class="brand-dot"></span><span id="brand-text">pomodoro</span></a>
+        <div class="language-picker" aria-label="Language"><button data-language="en">EN</button><button data-language="zh-TW">中</button><button data-language="ja">日</button></div>
         <div class="status" id="visibility-status">Ready when you are</div>
       </header>
 
       <section class="hero" id="top">
-        <p class="eyebrow">Make room for what matters</p>
-        <h1>One thing.<br><em>Fully present.</em></h1>
-        <p class="intro">A quiet timer for meaningful work. Begin small, stay with it, and come back when attention wanders.</p>
+        <p class="eyebrow" id="eyebrow">Make room for what matters</p>
+        <h1 id="hero-title">One thing.<br><em>Fully present.</em></h1>
+        <p class="intro" id="intro">A quiet timer for meaningful work. Begin small, stay with it, and come back when attention wanders.</p>
       </section>
 
       <section class="timer-card" aria-label="Pomodoro timer">
@@ -34,14 +35,13 @@
         </div>
         <div class="controls">
           <button class="primary" id="start">Start focus</button>
-          <button class="quiet" id="reset">Reset</button>
-          <button class="quiet" id="skip">Skip</button>
+          <button class="quiet" id="reset">Reset</button><button class="quiet" id="skip">Skip</button>
         </div>
         <p class="session-count" id="count">0 sessions today</p>
         <div class="mode-picker" aria-label="Timer mode">
-          <button class="mode-chip selected" data-mode="focus">Focus<br><small>25 min</small></button>
-          <button class="mode-chip" data-mode="short">Short break<br><small>5 min</small></button>
-          <button class="mode-chip" data-mode="long">Long break<br><small>15 min</small></button>
+          <button class="mode-chip selected" data-mode="focus"><span></span><br><small>25 min</small></button>
+          <button class="mode-chip" data-mode="short"><span></span><br><small>5 min</small></button>
+          <button class="mode-chip" data-mode="long"><span></span><br><small>15 min</small></button>
         </div>
       </section>
 
@@ -51,9 +51,9 @@
     </main>
     <div class="toast" id="notice" role="status"></div>
     <dialog id="return-dialog">
-      <div class="dialog-mark">↙</div><p class="eyebrow">Attention reset</p><h2>Come back to the work.</h2>
+      <div class="dialog-mark">↙</div><p class="eyebrow" id="return-eyebrow">Attention reset</p><h2 id="return-title">Come back to the work.</h2>
       <p id="return-copy"></p><button id="return-btn" class="primary">I’m back</button>
     </dialog>
-    <script type="module" src="app.js" integrity="sha256-xKJE7VfClQlsD4g2hcKlhbBoCRy5fs7jqfNRUgpMcpA="></script>
+    <script type="module" src="app.js" integrity="sha256-Pqzf5OW/pltZCVJIvYfBklhl91DivHG7z7+oxH4GZ9w="></script>
   </body>
 </html>
