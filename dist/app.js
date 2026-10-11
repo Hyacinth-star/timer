@@ -3,7 +3,7 @@ import { motivations, supportedLanguages, translate } from './i18n.js';
 
 const state = {
   mode: 'focus', remaining: DURATIONS.focus, running: false, endAt: null,
-  focusCompleted: 0, interruptions: 0, locked: false, quoteIndex: 0, language: 'en'
+  focusCompleted: 0, interruptions: 0, locked: false, quoteIndex: 0, language: 'en', task: '', nextStep: ''
 };
 
 let tickId;
@@ -12,7 +12,7 @@ const elements = {
   mode: $('#mode'), time: $('#time'), start: $('#start'), reset: $('#reset'), skip: $('#skip'),
   ring: $('#progress-ring'), count: $('#count'), quote: $('#quote'), author: $('#author'),
   notice: $('#notice'), lock: $('#lock'), returnDialog: $('#return-dialog'),
-  returnCopy: $('#return-copy'), returnBtn: $('#return-btn'), visibility: $('#visibility-status'),
+  returnCopy: $('#return-copy'), returnBtn: $('#return-btn'), visibility: $('#visibility-status'), taskInput: $('#task-input'), currentTask: $('#current-task'), nextInput: $('#next-input'),
   chips: [...document.querySelectorAll('.mode-chip')], languages: [...document.querySelectorAll('[data-language]')]
 };
 const t = (key) => translate(state.language, key);
@@ -36,6 +36,7 @@ function applyLanguage() {
   $('#hero-title').innerHTML = t('title'); $('#intro').textContent = t('intro');
   $('#reset').textContent = t('reset'); $('#skip').textContent = t('skip');
   $('#return-eyebrow').textContent = t('backEyebrow'); $('#return-title').textContent = t('backTitle'); $('#return-btn').textContent = t('back');
+  $('#task-label').textContent = t('taskLabel'); elements.taskInput.placeholder = t('taskPlaceholder'); $('#next-label').textContent = t('nextLabel'); elements.nextInput.placeholder = t('nextPlaceholder'); $('#step-required').textContent = t('stepRequired');
   elements.chips.forEach((chip) => chip.querySelector('span').textContent = copyFor(chip.dataset.mode));
   elements.languages.forEach((button) => button.classList.toggle('active', button.dataset.language === state.language));
 }
@@ -52,6 +53,9 @@ function render() {
   elements.lock.textContent = t('lock'); elements.lock.classList.toggle('active', state.running && state.mode === 'focus');
   elements.visibility.textContent = state.running ? t('protected') : t('ready');
   elements.chips.forEach((chip) => chip.classList.toggle('selected', chip.dataset.mode === state.mode));
+  elements.taskInput.value = state.task;
+  elements.currentTask.hidden = !state.task;
+  elements.currentTask.textContent = state.task ? t('currentTask').replace('{task}', state.task) : '';
 }
 
 function setQuote() {
@@ -113,6 +117,9 @@ function interrupt() {
   state.running = false; state.endAt = null; state.locked = true; state.interruptions += 1;
   stopClock(); render(); persist();
   elements.returnCopy.textContent = t('interrupted');
+  elements.nextInput.value = state.nextStep;
+  elements.returnBtn.disabled = !state.nextStep.trim();
+  $('#step-required').hidden = Boolean(state.nextStep.trim());
   elements.returnDialog.showModal();
 }
 
@@ -120,7 +127,9 @@ elements.start.addEventListener('click', start);
 elements.reset.addEventListener('click', () => { stopClock(); state.running = false; state.endAt = null; state.remaining = DURATIONS[state.mode]; render(); persist(); });
 elements.skip.addEventListener('click', finishPhase);
 elements.chips.forEach((chip) => chip.addEventListener('click', () => chooseMode(chip.dataset.mode)));
-elements.returnBtn.addEventListener('click', () => { state.locked = false; elements.returnDialog.close(); render(); persist(); showNotice(t('welcome')); });
+elements.returnBtn.addEventListener('click', () => { if (!state.nextStep.trim()) return; state.locked = false; elements.returnDialog.close(); render(); persist(); showNotice(t('welcome')); });
+elements.taskInput.addEventListener('input', () => { state.task = elements.taskInput.value.trimStart(); render(); persist(); });
+elements.nextInput.addEventListener('input', () => { state.nextStep = elements.nextInput.value.trimStart(); elements.returnBtn.disabled = !state.nextStep.trim(); $('#step-required').hidden = Boolean(state.nextStep.trim()); persist(); });
 elements.languages.forEach((button) => button.addEventListener('click', () => { state.language = button.dataset.language; applyLanguage(); setQuote(); render(); persist(); }));
 document.addEventListener('visibilitychange', () => { if (document.hidden) interrupt(); });
 window.addEventListener('blur', () => window.setTimeout(() => { if (!document.hasFocus()) interrupt(); }, 100));

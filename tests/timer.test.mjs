@@ -44,5 +44,6 @@ test('declares a restrictive content policy and local server security headers', 
 test('provides English, Traditional Chinese, and Japanese interface text', () => {
   assert.deepEqual(supportedLanguages, ['en', 'zh-TW', 'ja']);
   for (const language of supportedLanguages) assert.ok(translate(language, 'start').length > 0);
+  for (const language of supportedLanguages) assert.ok(translate(language, 'taskLabel').length > 0);
   for (const language of supportedLanguages) assert.ok(motivations[language].length > 0);
 });
