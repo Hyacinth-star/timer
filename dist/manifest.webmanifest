@@ -2,7 +2,7 @@
   "name": "Pomodoro Focus",
   "short_name": "Pomodoro",
   "description": "A quiet timer for meaningful work.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f6f6f4",
   "theme_color": "#f6f6f4",

@@ -27,6 +27,7 @@ test('includes a standalone PWA manifest for mobile installation', async () => {
   assert.equal(manifest.display, 'standalone');
   assert.equal(manifest.short_name, 'Pomodoro');
   assert.ok(manifest.icons.length > 0);
+  assert.equal(manifest.start_url, './');
 });
 
 test('declares a restrictive content policy and local server security headers', async () => {
