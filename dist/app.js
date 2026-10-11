@@ -1,13 +1,5 @@
 import { DURATIONS, formatTime, nextMode, progressFor } from './timer-core.js';
-import { supportedLanguages, translate } from './i18n.js';
-
-const quotes = [
-  ['The secret of getting ahead is getting started.', 'Mark Twain'],
-  ['Great things are done by a series of small things brought together.', 'Vincent van Gogh'],
-  ['The future depends on what you do today.', 'Mahatma Gandhi'],
-  ['Do the work. Let the results speak.', 'Focus'],
-  ['A little progress each day adds up to big results.', 'Unknown']
-];
+import { motivations, supportedLanguages, translate } from './i18n.js';
 
 const state = {
   mode: 'focus', remaining: DURATIONS.focus, running: false, endAt: null,
@@ -63,6 +55,7 @@ function render() {
 }
 
 function setQuote() {
+  const quotes = motivations[state.language];
   const [quote, author] = quotes[state.quoteIndex % quotes.length];
   elements.quote.textContent = `“${quote}”`;
   elements.author.textContent = `— ${author}`;
@@ -128,7 +121,7 @@ elements.reset.addEventListener('click', () => { stopClock(); state.running = fa
 elements.skip.addEventListener('click', finishPhase);
 elements.chips.forEach((chip) => chip.addEventListener('click', () => chooseMode(chip.dataset.mode)));
 elements.returnBtn.addEventListener('click', () => { state.locked = false; elements.returnDialog.close(); render(); persist(); showNotice(t('welcome')); });
-elements.languages.forEach((button) => button.addEventListener('click', () => { state.language = button.dataset.language; applyLanguage(); render(); persist(); }));
+elements.languages.forEach((button) => button.addEventListener('click', () => { state.language = button.dataset.language; applyLanguage(); setQuote(); render(); persist(); }));
 document.addEventListener('visibilitychange', () => { if (document.hidden) interrupt(); });
 window.addEventListener('blur', () => window.setTimeout(() => { if (!document.hasFocus()) interrupt(); }, 100));
 

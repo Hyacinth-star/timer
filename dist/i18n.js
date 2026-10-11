@@ -5,3 +5,8 @@ export const dictionaries = {
 };
 export const supportedLanguages = ['en', 'zh-TW', 'ja'];
 export const translate = (language, key) => dictionaries[language]?.[key] ?? dictionaries.en[key] ?? key;
+export const motivations = {
+  en: [['The secret of getting ahead is getting started.', 'Mark Twain'], ['Do the work. Let the results speak.', 'Focus']],
+  'zh-TW': [['千里之行，始於足下。', '老子'], ['專注於眼前的一步，成果會自己累積。', '番茄鐘']],
+  ja: [['千里の道も一歩から。', 'ことわざ'], ['目の前の一歩に集中すれば、成果は積み重なる。', 'ポモドーロ']]
+};
