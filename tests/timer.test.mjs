@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { formatTime, nextMode, progressFor } from '../dist/timer-core.js';
-import { motivations, supportedLanguages, translate } from '../dist/i18n.js';
+import { dailyMotivation, motivations, supportedLanguages, translate } from '../dist/i18n.js';
 
 test('formats countdown time', () => {
   assert.equal(formatTime(1500), '25:00');
@@ -46,4 +46,10 @@ test('provides English, Traditional Chinese, and Japanese interface text', () =>
   for (const language of supportedLanguages) assert.ok(translate(language, 'start').length > 0);
   for (const language of supportedLanguages) assert.ok(translate(language, 'taskLabel').length > 0);
   for (const language of supportedLanguages) assert.ok(motivations[language].length > 0);
+});
+
+test('keeps the daily motivation stable for the same date', () => {
+  const date = new Date(2026, 9, 11);
+  assert.deepEqual(dailyMotivation('ja', date), dailyMotivation('ja', date));
+  assert.equal(dailyMotivation('zh-TW', date).length, 2);
 });

@@ -1,4 +1,4 @@
-const CACHE = 'pomodoro-focus-v8';
+const CACHE = 'pomodoro-focus-v9';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './timer-core.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => event.waitUntil(

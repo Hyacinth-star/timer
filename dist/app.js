@@ -1,5 +1,5 @@
 import { DURATIONS, formatTime, nextMode, progressFor } from './timer-core.js';
-import { motivations, supportedLanguages, translate } from './i18n.js';
+import { dailyMotivation, supportedLanguages, translate } from './i18n.js';
 
 const state = {
   mode: 'focus', remaining: DURATIONS.focus, running: false, endAt: null,
@@ -59,8 +59,7 @@ function render() {
 }
 
 function setQuote() {
-  const quotes = motivations[state.language];
-  const [quote, author] = quotes[state.quoteIndex % quotes.length];
+  const [quote, author] = dailyMotivation(state.language);
   elements.quote.textContent = `“${quote}”`;
   elements.author.textContent = `— ${author}`;
 }
@@ -80,7 +79,6 @@ function finishPhase() {
   const completedMode = state.mode;
   state.mode = nextMode(completedMode, state.focusCompleted);
   state.remaining = DURATIONS[state.mode];
-  state.quoteIndex += 1;
   setQuote(); render(); persist();
   showNotice(completedMode === 'focus' ? t('complete').replace('{mode}', copyFor(state.mode).toLowerCase()) : t('breakComplete'));
   if ('Notification' in window && Notification.permission === 'granted') new Notification('Pomodoro Focus', { body: 'Your timer is complete.' });

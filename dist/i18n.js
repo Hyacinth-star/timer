@@ -10,3 +10,8 @@ export const motivations = {
   'zh-TW': [['千里之行，始於足下。', '老子'], ['專注於眼前的一步，成果會自己累積。', '番茄鐘']],
   ja: [['千里の道も一歩から。', 'ことわざ'], ['目の前の一歩に集中すれば、成果は積み重なる。', 'ポモドーロ']]
 };
+export function dailyMotivation(language, date = new Date()) {
+  const dayKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const index = [...dayKey].reduce((sum, character) => sum + character.charCodeAt(0), 0) % motivations[language].length;
+  return motivations[language][index] ?? motivations.en[index % motivations.en.length];
+}
