@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f6f4" />
+    <title>Pomodoro Focus</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header>
+        <a class="brand" href="#top" aria-label="Pomodoro Focus home"><span class="brand-dot"></span>pomodoro</a>
+        <div class="status" id="visibility-status">Ready when you are</div>
+      </header>
+
+      <section class="hero" id="top">
+        <p class="eyebrow">Make room for what matters</p>
+        <h1>One thing.<br><em>Fully present.</em></h1>
+        <p class="intro">A quiet timer for meaningful work. Begin small, stay with it, and come back when attention wanders.</p>
+      </section>
+
+      <section class="timer-card" aria-label="Pomodoro timer">
+        <div class="timer-topline"><span id="mode">Focus</span><span id="lock" class="lock">Focus lock</span></div>
+        <div class="timer-display">
+          <div class="progress-ring" id="progress-ring"><div class="time" id="time">25:00</div></div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="start">Start focus</button>
+          <button class="quiet" id="reset">Reset</button>
+          <button class="quiet" id="skip">Skip</button>
+        </div>
+        <p class="session-count" id="count">0 sessions today</p>
+        <div class="mode-picker" aria-label="Timer mode">
+          <button class="mode-chip selected" data-mode="focus">Focus<br><small>25 min</small></button>
+          <button class="mode-chip" data-mode="short">Short break<br><small>5 min</small></button>
+          <button class="mode-chip" data-mode="long">Long break<br><small>15 min</small></button>
+        </div>
+      </section>
+
+      <section class="quote-card" aria-live="polite">
+        <p class="quote-mark">“</p><blockquote id="quote">“The secret of getting ahead is getting started.”</blockquote><cite id="author">— Mark Twain</cite>
+      </section>
+    </main>
+    <div class="toast" id="notice" role="status"></div>
+    <dialog id="return-dialog">
+      <div class="dialog-mark">↙</div><p class="eyebrow">Attention reset</p><h2>Come back to the work.</h2>
+      <p id="return-copy"></p><button id="return-btn" class="primary">I’m back</button>
+    </dialog>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
