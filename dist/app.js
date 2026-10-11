@@ -122,3 +122,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) inter
 window.addEventListener('blur', () => window.setTimeout(() => { if (!document.hasFocus()) interrupt(); }, 100));
 
 restore(); setQuote(); render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+}
