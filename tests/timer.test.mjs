@@ -27,3 +27,15 @@ test('includes a standalone PWA manifest for mobile installation', async () => {
   assert.equal(manifest.short_name, 'Pomodoro');
   assert.ok(manifest.icons.length > 0);
 });
+
+test('declares a restrictive content policy and local server security headers', async () => {
+  const [page, server] = await Promise.all([
+    readFile(new URL('../dist/index.html', import.meta.url), 'utf8'),
+    readFile(new URL('../server.mjs', import.meta.url), 'utf8')
+  ]);
+  assert.match(page, /Content-Security-Policy/);
+  assert.match(page, /default-src 'self'/);
+  for (const header of ['X-Content-Type-Options', 'Permissions-Policy', 'X-Frame-Options', 'Referrer-Policy']) {
+    assert.match(server, new RegExp(header));
+  }
+});
